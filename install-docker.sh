@@ -1,6 +1,7 @@
 #!/bin/bash
 apt-get update
 
+UCP_PUBLIC_FQDN=$1
 echo "$UCP_PUBLIC_FQDN is the Public FQDN"
 
 apt-get install -y --no-install-recommends \
