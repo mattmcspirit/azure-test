@@ -49,13 +49,12 @@ add-apt-repository \
    stable test"
 apt-get update
 apt-get install -y docker-ce
-echo "Docker Engine Installed"
 sleep 10
 
 # 4TH SECTION - INSTALL UCP
 
 echo "UCP_PUBLIC_FQDN=$UCP_PUBLIC_FQDN"
-service docker start
+service docker restart
 docker login -p $HUB_PASSWORD -u $HUB_USERNAME
 docker run docker/ucp:$UCP_VERSION images --list
 docker run --rm --name ucp \
@@ -63,7 +62,6 @@ docker run --rm --name ucp \
   -v /var/run/docker.sock:/var/run/docker.sock \
   docker/ucp:$UCP_VERSION \
   install --san $UCP_PUBLIC_FQDN --admin-password $UCP_ADMIN_PASSWORD --debug
-echo "Docker Universal Control Plane Installed"
 sleep 10
 
 # 5TH SECTION - INSTALL DTR
@@ -72,7 +70,7 @@ if [ -z "$UCP_NODE"]; then
   export UCP_NODE=$(docker node ls | grep mgr0 | awk '{print $3}');
 fi
 
-service docker start
+service docker restart
 docker login -p $HUB_PASSWORD -u $HUB_USERNAME
 docker run --rm \
   docker/dtr:$DTR_VERSION install \
@@ -85,5 +83,3 @@ docker run --rm \
   --replica-https-port 8443 \
   --hub-username $HUB_USERNAME \
   --hub-password $HUB_PASSWORD
-  echo "Docker Trusted Registry Installed"
-  echo "Docker Engine, Universal Control Plane and Trusted Registry all installed"
