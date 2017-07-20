@@ -12,7 +12,7 @@ fi
 echo "UCP_PUBLIC_FQDN=$UCP_PUBLIC_FQDN"
 
 #start docker service
-sudo service docker start
+service docker start
 
 docker login -p $HUB_PASSWORD -u $HUB_USERNAME
 
