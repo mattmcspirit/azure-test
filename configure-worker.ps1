@@ -1,7 +1,7 @@
 [CmdletBinding()]
 Param(
   [switch] $SkipEngineUpgrade,
-  [string] $DockerVersion,
+  [string] $DockerVersion = "17.06.0-ce",
   [string] $DTRFQDN,
   [string] $HubUsername,
   [string] $HubPassword,
@@ -14,13 +14,20 @@ $DockerDataPath = "C:\ProgramData\Docker"
 
 function Disable-RealTimeMonitoring () {
     Set-MpPreference -DisableRealtimeMonitoring $true
-    reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 1 /f
-    reg add "HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate /t REG_DWORD /d 1 /f
 }
+
+function Install-Container () {
+    # add Windows Container image
+    Install-Module -Name DockerMsftProvider -Repository PSGallery -Force
+    Install-Package -Name docker -ProviderName DockerMsftProvider
+    Restart-Computer -Force
+    docker pull microsoft/windowsservercore
+}
+
 
 function Install-LatestDockerEngine () {
     #Get Docker Engine from Master Builds
-    Invoke-WebRequest -Uri "https://download.docker.com/win/static/test/x86_64/docker-$DockerVersion.zip" -OutFile "docker.zip"
+    Invoke-WebRequest -Uri "https://download.docker.com/win/static/test/x86_64/docker-17.06.0-ce.zip" -OutFile "docker.zip"
 
     Stop-Service docker
     Remove-Item -Force -Recurse $env:ProgramFiles\docker
@@ -68,6 +75,8 @@ try
     Disable-RealTimeMonitoring
     
     if (-not ($SkipEngineUpgrade.IsPresent)) {
+        Write-Host "Installing Windows Container"
+	Install-Container
         Write-Host "Upgrading Docker Engine"
         Install-LatestDockerEngine
     }
