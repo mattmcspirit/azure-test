@@ -1,5 +1,8 @@
 #!/bin/bash
 apt-get update
+
+echo "$UCP_PUBLIC_FQDN is the Public FQDN"
+
 apt-get install -y --no-install-recommends \
     linux-image-extra-$(uname -r) \
     linux-image-extra-virtual \
