@@ -19,7 +19,7 @@ if [ -z "$UCP_NODE"]; then
 fi
 
 #start docker service
-sudo service docker start
+service docker start
 
 docker login -p $HUB_PASSWORD -u $HUB_USERNAME
 
